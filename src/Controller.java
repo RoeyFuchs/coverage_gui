@@ -1,8 +1,6 @@
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -12,8 +10,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -21,11 +22,54 @@ import static java.lang.System.exit;
 
 public class Controller implements Initializable {
     public GridPane mainGrid;
+    GridPane mapGrid;
     Map map;
+    List<Map> mapslog;
+    int currentMap = -1;
     BooleanProperty blockPointsAdd = new SimpleBooleanProperty();
 
+    BooleanProperty blockBack = new SimpleBooleanProperty();
 
-    StringProperty mapPath = new SimpleStringProperty();
+
+    BooleanProperty blockForwerd = new SimpleBooleanProperty();
+    BooleanProperty blockPlay = new SimpleBooleanProperty();
+
+
+    public boolean isBlockBack() {
+        return blockBack.get();
+    }
+
+    public BooleanProperty blockBackProperty() {
+        return blockBack;
+    }
+
+    public void setBlockBack(boolean blockBack) {
+        this.blockBack.set(blockBack);
+    }
+
+    public boolean isBlockForwerd() {
+        return blockForwerd.get();
+    }
+
+    public BooleanProperty blockForwerdProperty() {
+        return blockForwerd;
+    }
+
+    public void setBlockForwerd(boolean blockForwerd) {
+        this.blockForwerd.set(blockForwerd);
+    }
+
+    public boolean getBlockPlay() {
+        return blockPlay.get();
+    }
+
+    public BooleanProperty blockPlayProperty() {
+        return blockPlay;
+    }
+
+    public void setBlockPlay(boolean blockPlay) {
+        this.blockPlay.set(blockPlay);
+    }
 
 
     public boolean getBlockPointsAdd() {
@@ -40,33 +84,47 @@ public class Controller implements Initializable {
         this.blockPointsAdd.set(blockPointsAdd);
     }
 
-
-    public void loadMapFile(ActionEvent actionEvent) {
+    public File getFile(String title) {
         Window theStage = mainGrid.getScene().getWindow();
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Map file");
-        File f = fileChooser.showOpenDialog(theStage);
+        fileChooser.setTitle(title);
+        return fileChooser.showOpenDialog(theStage);
+    }
 
+
+    public void loadMapFile(ActionEvent actionEvent) {
+        File f = this.getFile("Open Map file");
         if (f == null) return; //if user didn't choose file
         try {
             this.map = Map.CreateMap(f);
-            this.createMapGrid();
+            GridPane newMapGrid = this.createMapGrid(this.map);
+            setMapGrid(newMapGrid);
             this.blockPointsAdd.set(false);
         } catch (Exception e) {
             AlertBox.display("can't open map file");
         }
     }
 
+    private void setMapGrid(GridPane grid) {
+        GridPane.setConstraints(grid, 0,1);
+        GridPane.setColumnSpan(grid, GridPane.REMAINING);
+        if (mapGrid != null) {
+            mainGrid.getChildren().remove(this.mapGrid);
+        }
+        this.mainGrid.getChildren().add(grid);
+        this.mapGrid = grid;
+    }
+
     public void exitFunc() {
         exit(0);
     }
 
-    private void createMapGrid() {
+    private GridPane createMapGrid(Map inMap) {
         int pad = 2;
         int menuBarSize = 25;
         GridPane mapGrid = new GridPane();
-        int rows = map.getRowsNumber();
-        int columns = map.getColumnsNumber();
+        int rows = inMap.getRowsNumber();
+        int columns = inMap.getColumnsNumber();
         mapGrid.setGridLinesVisible(true);
         Scene scene = this.mainGrid.getScene();
         for (int i = 0; i < rows; i++) {
@@ -76,7 +134,7 @@ public class Controller implements Initializable {
                 rec.widthProperty().bind(scene.widthProperty().divide(columns).add(-2 * pad));
                 //height
                 rec.heightProperty().bind(scene.heightProperty().add(-menuBarSize).divide(rows).add(-2 * pad));
-                Point p = map.getMatrix()[i][j];
+                Point p = inMap.getMatrix()[i][j];
 
                 rec.fillProperty().bind(Bindings.createObjectBinding(() -> IntToColor.getColor(p.valueProperty().get()), p.valueProperty()));
 
@@ -87,18 +145,14 @@ public class Controller implements Initializable {
             }
         }
         GridPane.setConstraints(mapGrid, 0, 1);
-        this.mainGrid.getChildren().add(mapGrid);
+        return mapGrid;
     }
 
     public void loadInteresPoints(ActionEvent actionEvent) {
-        Window theStage = mainGrid.getScene().getWindow();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Points file");
-        File f = fileChooser.showOpenDialog(theStage);
+        File f = getFile("Open Points file");
+        if (f == null) return; //if user didn't choose file
 
-        if (f==null) return; //if user didn't choose file
-
-        if(this.map == null) {
+        if (this.map == null) {
             AlertBox.display("Please load map file first.");
             return;
         }
@@ -121,10 +175,50 @@ public class Controller implements Initializable {
 
     }
 
+
+    public void loadMapLog(ActionEvent actionEvent) throws Exception {
+        File f = getFile("Open Map Log file");
+        if (f == null) return; //if user didn't choose file
+
+        BufferedReader reader = new BufferedReader(new FileReader(f));
+
+        String line = reader.readLine();
+
+        List<Map> maplist = new LinkedList<>();
+
+
+        while(line!= null) {
+            List<String> list = new LinkedList<>();
+            while((line= reader.readLine()) !=null && !line.equals("")) {
+                list.add(line);
+            }
+            maplist.add(Map.CreateMapFromLog(list));
+
+        }
+        this.mapslog = maplist;
+        if(this.mapslog.size() > 0) {
+            this.blockForwerd.set(false);
+            this.blockPlay.set(false);
+            this.changeMap(0);
+        }
+
+    }
+
+    private synchronized void changeMap(int n) {
+        if(n >= this.mapslog.size() ) return;
+        this.setMapGrid(createMapGrid(this.mapslog.get(n)));
+        this.currentMap = n;
+        if (this.mapslog.size()-1 == n) {
+            this.blockForwerd.set(true);
+        } else { this.blockForwerd.set(false); }
+        if (n == 0) {
+            this.blockBack.set(true);
+        } else { this.blockBack.set(false); }
+    }
+
     //clean the values of the points, keep only regular and borders
     private void cleanMap() {
         Point[][] mat = this.map.getMatrix();
-
         for (int i = 0; i < this.map.getRowsNumber(); i++) {
             for (int j = 0; j < this.map.getColumnsNumber(); j++) {
                 if (!(mat[i][j].getValue() == Map.BORDER) && !(mat[i][j].getValue() == Map.REGULAR)) {
@@ -137,5 +231,17 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.blockPointsAdd.set(true);
+        this.blockBack.set(true);
+        this.blockForwerd.set(true);
+        this.blockPlay.set(true);
+    }
+
+    public void mapBack(ActionEvent actionEvent) {
+        this.changeMap(this.currentMap-1);
+
+    }
+
+    public void mapforwerd(ActionEvent actionEvent) {
+        this.changeMap(this.currentMap+1);
     }
 }

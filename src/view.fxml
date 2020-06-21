@@ -17,11 +17,14 @@
             <MenuItem text="Load Map file..." onAction="#loadMapFile"></MenuItem>
             <MenuItem text="Load Points file..." disable="${controller.blockPointsAdd}" onAction="#loadInteresPoints"></MenuItem>
             <SeparatorMenuItem />
-            <MenuItem text="Load Map Log file..."></MenuItem>
+            <MenuItem text="Load Map Log file..." onAction="#loadMapLog"></MenuItem>
             <SeparatorMenuItem />
             <MenuItem text="Exit"  onAction="#exitFunc"/>
         </Menu>
-
     </MenuBar>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" disable="${controller.blockBack}" text="-" onAction="#mapBack"/>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" disable="${controller.blockPlay}" text="|"/>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" disable="${controller.blockForwerd}" text="+" onAction="#mapforwerd"/>
+
 
 </GridPane>

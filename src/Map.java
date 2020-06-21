@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Map {
@@ -19,6 +20,29 @@ public class Map {
 
     private Map(Point[][] matrix) {
         this.matrix = matrix;
+    }
+
+    public static Map CreateMapFromLog(List<String> list) throws IOException {
+        List<List<String>> info = new LinkedList<>();
+        for (int i =0; i < list.size(); i++) {
+            info.add(Arrays.asList(list.get(i).split("\t")));
+        }
+
+        Integer height = info.size();
+        Integer width = info.get(0).size();
+        Point matrix[][] = new Point[height][width];
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                if (!Map.isValidNumber(Integer.parseInt(info.get(i).get(j)))) {
+                    throw new IOException("Invalid number");
+                }
+                Point p = new Point(i, j);
+                p.setValue(Integer.parseInt(info.get(i).get(j))); //set value
+                matrix[i][j] = p; //add to matrix
+            }
+        }
+        return new Map(matrix);
+
     }
 
 
