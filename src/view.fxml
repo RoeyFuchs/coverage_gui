@@ -23,8 +23,8 @@
         </Menu>
     </MenuBar>
     <Button GridPane.rowIndex="0" GridPane.columnIndex="1" disable="${controller.blockBack}" text="-" onAction="#mapBack"/>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" disable="${controller.blockPlay}" text="|"/>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" disable="${controller.blockForwerd}" text="+" onAction="#mapforwerd"/>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" disable="${controller.blockPlay}" text="|" onAction="#mapPlay"/>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" disable="${controller.blockForwerd}" text="|" onAction="#mapforwerd"/>
 
 
 </GridPane>

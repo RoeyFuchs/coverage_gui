@@ -1,6 +1,9 @@
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -26,11 +29,9 @@ public class Controller implements Initializable {
     Map map;
     List<Map> mapslog;
     int currentMap = -1;
+    Thread mapChaingingThread;
     BooleanProperty blockPointsAdd = new SimpleBooleanProperty();
-
     BooleanProperty blockBack = new SimpleBooleanProperty();
-
-
     BooleanProperty blockForwerd = new SimpleBooleanProperty();
     BooleanProperty blockPlay = new SimpleBooleanProperty();
 
@@ -95,6 +96,7 @@ public class Controller implements Initializable {
     public void loadMapFile(ActionEvent actionEvent) {
         File f = this.getFile("Open Map file");
         if (f == null) return; //if user didn't choose file
+        this.clearThread();
         try {
             this.map = Map.CreateMap(f);
             GridPane newMapGrid = this.createMapGrid(this.map);
@@ -113,6 +115,12 @@ public class Controller implements Initializable {
         }
         this.mainGrid.getChildren().add(grid);
         this.mapGrid = grid;
+    }
+
+    private void clearThread() {
+        if(this.mapChaingingThread == null) return;
+        this.mapChaingingThread.interrupt();
+        this.mapChaingingThread = null;
     }
 
     public void exitFunc() {
@@ -180,6 +188,8 @@ public class Controller implements Initializable {
         File f = getFile("Open Map Log file");
         if (f == null) return; //if user didn't choose file
 
+        this.clearThread();
+
         BufferedReader reader = new BufferedReader(new FileReader(f));
 
         String line = reader.readLine();
@@ -243,5 +253,25 @@ public class Controller implements Initializable {
 
     public void mapforwerd(ActionEvent actionEvent) {
         this.changeMap(this.currentMap+1);
+    }
+
+    public void mapPlay(ActionEvent actionEvent) {
+        if(this.mapChaingingThread == null) {
+            Thread t = new Thread(() -> {
+                while (this.currentMap < this.mapslog.size()) {
+                    Platform.runLater(() -> mapforwerd(actionEvent));
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+                this.mapChaingingThread = null;
+            });
+            this.mapChaingingThread = t;
+            t.start();
+        } else { //stop the map change
+            this.mapChaingingThread.interrupt();
+        }
     }
 }
