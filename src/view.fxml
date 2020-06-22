@@ -21,6 +21,8 @@
             <SeparatorMenuItem />
             <MenuItem text="Creat random points" disable="${controller.blockRandom}" onAction="#random"></MenuItem>
             <SeparatorMenuItem />
+            <MenuItem text="Take a screen shot" onAction="#screenshot"/>
+            <SeparatorMenuItem />
             <MenuItem text="Exit"  onAction="#exitFunc"/>
         </Menu>
     </MenuBar>

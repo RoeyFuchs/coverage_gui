@@ -4,24 +4,28 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import javax.imageio.ImageIO;
+import java.io.*;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import static java.lang.System.exit;
+import static javax.print.attribute.standard.ReferenceUriSchemesSupported.FILE;
 
 public class Controller implements Initializable {
     public GridPane mainGrid;
@@ -303,5 +307,19 @@ public class Controller implements Initializable {
                 }
             }
         }
+    }
+
+    public void screenshot(ActionEvent actionEvent)  {
+        if (this.mapGrid == null) return;
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS").format(new Date());
+        WritableImage snapshot = this.mapGrid.snapshot(null, null);
+        File file = new File(timeStamp+".png");
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
+        } catch (IOException e) {
+            System.err.println("Error while saving screen shot");
+        }
+
+
     }
 }
