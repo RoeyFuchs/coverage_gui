@@ -34,6 +34,19 @@ public class Controller implements Initializable {
     BooleanProperty blockBack = new SimpleBooleanProperty();
     BooleanProperty blockForwerd = new SimpleBooleanProperty();
     BooleanProperty blockPlay = new SimpleBooleanProperty();
+    BooleanProperty blockRandom = new SimpleBooleanProperty();
+
+    public boolean isBlockRandom() {
+        return blockRandom.get();
+    }
+
+    public BooleanProperty blockRandomProperty() {
+        return blockRandom;
+    }
+
+    public void setBlockRandom(boolean blockRandom) {
+        this.blockRandom.set(blockRandom);
+    }
 
 
     public boolean isBlockBack() {
@@ -102,6 +115,7 @@ public class Controller implements Initializable {
             GridPane newMapGrid = this.createMapGrid(this.map);
             setMapGrid(newMapGrid);
             this.blockPointsAdd.set(false);
+            this.blockRandom.set(false);
         } catch (Exception e) {
             AlertBox.display("can't open map file");
         }
@@ -203,8 +217,9 @@ public class Controller implements Initializable {
                 list.add(line);
             }
             maplist.add(Map.CreateMapFromLog(list));
-
         }
+        this.blockRandom.set(true);
+        this.blockPointsAdd.set(true);
         this.mapslog = maplist;
         if(this.mapslog.size() > 0) {
             this.blockForwerd.set(false);
@@ -244,6 +259,7 @@ public class Controller implements Initializable {
         this.blockBack.set(true);
         this.blockForwerd.set(true);
         this.blockPlay.set(true);
+        this.blockRandom.set(true);
     }
 
     public void mapBack(ActionEvent actionEvent) {
@@ -272,6 +288,20 @@ public class Controller implements Initializable {
             t.start();
         } else { //stop the map change
             this.mapChaingingThread.interrupt();
+        }
+    }
+
+    public void random(ActionEvent actionEvent) {
+        final float pr = 0.20F;
+        for (int i = 0; i < this.map.getRowsNumber(); i++) {
+            for (int j =0; j < this.map.getColumnsNumber(); j++) {
+                if (this.map.getMatrix()[i][j].getValue() == Map.BORDER) continue;
+                if (Math.random() <= pr) {
+                    this.map.getMatrix()[i][j].setValue(Map.INTERES);
+                } else {
+                    this.map.getMatrix()[i][j].setValue(Map.REGULAR);
+                }
+            }
         }
     }
 }
