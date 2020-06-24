@@ -13,10 +13,9 @@
 <?import javafx.scene.layout.HBox?>
 <GridPane xmlns:fx="http://javafx.com/fxml"
           fx:controller="Controller"
-          fx:id="mainGrid"
-            alignment="TOP_CENTER">
+          fx:id="mainGrid">
 
-    <MenuBar  GridPane.columnIndex="0" GridPane.rowIndex="0">
+    <MenuBar GridPane.columnIndex="0" GridPane.rowIndex="0">
         <Menu fx:id="mMain" text="File">
             <MenuItem text="Load Map file..." onAction="#loadMapFile"></MenuItem>
             <MenuItem text="Load Points file..." disable="${controller.blockPointsAdd}" onAction="#loadInteresPoints"></MenuItem>
@@ -30,8 +29,7 @@
             <MenuItem text="Exit"  onAction="#exitFunc"/>
         </Menu>
     </MenuBar>
-    <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.columnSpan="3" >
-    <Button  disable="${controller.blockBack}"  onAction="#mapBack">
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" disable="${controller.blockBack}"  onAction="#mapBack">
         <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -40,7 +38,7 @@
             </ImageView>
         </graphic>
     </Button>
-    <Button alignment="CENTER" disable="${controller.blockPlay}"  onAction="#mapPlay">
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" alignment="CENTER" disable="${controller.blockPlay}"  onAction="#mapPlay">
         <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -49,7 +47,7 @@
             </ImageView>
         </graphic>
     </Button>
-    <Button   disable="${controller.blockForwerd}"  onAction="#mapforwerd">
+    <Button  GridPane.rowIndex="0" GridPane.columnIndex="3" disable="${controller.blockForwerd}"  onAction="#mapforwerd">
         <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -58,7 +56,6 @@
             </ImageView>
         </graphic>
     </Button>
-    </HBox>
 
 
 </GridPane>
