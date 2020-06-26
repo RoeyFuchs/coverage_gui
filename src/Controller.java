@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static java.lang.System.exit;
+import static java.lang.System.setOut;
 import static javax.print.attribute.standard.ReferenceUriSchemesSupported.FILE;
 
 public class Controller implements Initializable {
@@ -239,7 +240,11 @@ public class Controller implements Initializable {
         this.currentMap = n;
         if (this.mapslog.size()-1 == n) {
             this.blockForwerd.set(true);
-        } else { this.blockForwerd.set(false); }
+            this.blockPlay.set(true);
+        } else {
+            this.blockForwerd.set(false);
+            this.blockPlay.set(false);
+        }
         if (n == 0) {
             this.blockBack.set(true);
         } else { this.blockBack.set(false); }
@@ -278,7 +283,7 @@ public class Controller implements Initializable {
     public void mapPlay(ActionEvent actionEvent) {
         if(this.mapChaingingThread == null) {
             Thread t = new Thread(() -> {
-                while (this.currentMap < this.mapslog.size()) {
+                while (this.currentMap < this.mapslog.size()-1) {
                     Platform.runLater(() -> mapforwerd(actionEvent));
                     try {
                         Thread.sleep(500);
