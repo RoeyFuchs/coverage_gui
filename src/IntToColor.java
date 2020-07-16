@@ -1,5 +1,6 @@
 import javafx.scene.paint.Color;
 
+//convert numbers to color. here you can change the rectangles colors
 public class IntToColor {
     public static Color getColor(int v) {
         if (v == (Map.BORDER)) {

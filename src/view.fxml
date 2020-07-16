@@ -29,7 +29,7 @@
             <MenuItem text="Exit"  onAction="#exitFunc"/>
         </Menu>
     </MenuBar>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" disable="${controller.blockBack}"  onAction="#mapBack">
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" disable="${controller.blockBackward}" onAction="#mapBackward">
         <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -47,7 +47,7 @@
             </ImageView>
         </graphic>
     </Button>
-    <Button  GridPane.rowIndex="0" GridPane.columnIndex="3" disable="${controller.blockForwerd}"  onAction="#mapforwerd">
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" disable="${controller.blockForward}" onAction="#mapForward">
         <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <image>

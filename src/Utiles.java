@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Utiles {
-
+    //create list from csv file
     public static List<String> readPointsFromCSV(File f) throws IOException {
         List<String> records = new LinkedList<>();
         BufferedReader br = new BufferedReader(new FileReader(f));
@@ -18,7 +18,7 @@ public class Utiles {
         }
         return records;
     }
-
+    //create list of points from list of records (the return value of readPointsFromCSV function)
     public static List<Point> convertStringToPoints(List<String> records) throws Exception{
         List<Point> pointList = new LinkedList<>();
 
