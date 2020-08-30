@@ -12,8 +12,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.beans.XMLDecoder;
 import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -23,6 +29,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static java.lang.System.exit;
+import static java.lang.System.setOut;
 
 public class Controller implements Initializable {
     public GridPane mainGrid;
@@ -184,6 +191,30 @@ public class Controller implements Initializable {
             AlertBox.display("Please load map file first.");
             return;
         }
+
+        final String POINT="Point";
+        final String LOCATION = "location";
+        final String INTERESTING = "interesting";
+
+        List<Report> pointList = new LinkedList<>();
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(f);
+            doc.getDocumentElement().normalize();
+            NodeList nList = doc.getElementsByTagName(POINT);
+
+            for (int i = 0; i < nList.getLength(); ++i) {
+                Element element = (Element) nList.item(i);
+                pointList.add(new Report(Utiles.parsePoint(element.getAttribute(LOCATION)), Boolean.valueOf(element.getAttribute(INTERESTING))));
+
+            }
+
+        } catch (Exception e) {
+            AlertBox.display("Points file is incorrect");
+        }
+
+        /*
         List<String> records;
         List<Point> pointList;
 
@@ -198,6 +229,7 @@ public class Controller implements Initializable {
         } catch (Exception e) {
             AlertBox.display("Point file is incorrect");
         }
+        */
 
     }
 
@@ -206,7 +238,6 @@ public class Controller implements Initializable {
     public void loadMapLog(ActionEvent actionEvent) throws Exception {
         File f = getFile("Open Map Log file");
         if (f == null) return; //if user didn't choose file
-
         this.clearThread(); //clear playing thread is exist (another file already loaded and play)
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = reader.readLine();
