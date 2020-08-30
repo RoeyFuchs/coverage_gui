@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utiles {
     //create list from csv file
@@ -30,5 +32,16 @@ public class Utiles {
             pointList.add(p);
         }
         return pointList;
+    }
+
+    public static Point parsePoint(String s){
+        //parse (x,y) to Point
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher(s);
+        m.find();
+        int x=Integer.parseInt(m.group());
+        m.find();
+        int y=Integer.parseInt(m.group());
+        return  new Point(x,y);
     }
 }
