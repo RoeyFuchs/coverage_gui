@@ -7,5 +7,23 @@ public class Report {
         this.location = p;
     }
 
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public Boolean getIntersting() {
+        return isIntersting;
+    }
+
+    public void setIntersting(Boolean intersting) {
+        isIntersting = intersting;
+    }
+
+
+
 
 }

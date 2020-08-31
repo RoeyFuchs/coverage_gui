@@ -1,3 +1,4 @@
+import com.sun.webkit.network.Util;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -7,8 +8,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -203,15 +206,30 @@ public class Controller implements Initializable {
             Document doc = dBuilder.parse(f);
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName(POINT);
-
             for (int i = 0; i < nList.getLength(); ++i) {
                 Element element = (Element) nList.item(i);
                 pointList.add(new Report(Utiles.parsePoint(element.getAttribute(LOCATION)), Boolean.valueOf(element.getAttribute(INTERESTING))));
-
             }
-
         } catch (Exception e) {
             AlertBox.display("Points file is incorrect");
+            return;
+        }
+
+        List<List<Point>> pathToInteres = pathToInsteres(pointList);
+
+        try {
+            ImagePattern img = Utiles.margeImages(ImageIO.read(new File("images/img.png")),ImageIO.read(new File("images/img.png")));
+            //rec.setFill(img);
+        } catch(Exception e) {
+            System.err.println("Error while loading images files");
+        }
+        System.out.println();
+
+        //now I have a list with the path.
+        //for each report that is interest point, build a path
+        for (Report j: pointList) {
+            if(j.getIntersting())
+                System.out.println(j.getLocation());
         }
 
         /*
@@ -233,6 +251,16 @@ public class Controller implements Initializable {
 
     }
 
+    //return list that the last point is interest
+    public List<List<Point>> pathToInsteres(List<Report> reportList) {
+        List<List<Point>> pointsList = new LinkedList<>();
+        for(int i = 0; i < reportList.size(); ++i) {
+            if (reportList.get(i).getIntersting()) {
+                pointsList.add(Utiles.getPointsFromReport(reportList, 0,i));
+            }
+        }
+        return pointsList;
+    }
 
     //when user click on loading map log file
     public void loadMapLog(ActionEvent actionEvent) throws Exception {
