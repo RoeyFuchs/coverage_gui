@@ -26,10 +26,7 @@ import java.beans.XMLDecoder;
 import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static java.lang.System.exit;
 import static java.lang.System.setOut;
@@ -46,6 +43,10 @@ public class Controller implements Initializable {
     BooleanProperty blockForward = new SimpleBooleanProperty(); //block forward button
     BooleanProperty blockPlay = new SimpleBooleanProperty(); //block play button
     BooleanProperty blockRandom = new SimpleBooleanProperty(); //block random points option
+    Boolean agentLoaded = false;
+    List<List<Point>> pathToInsteres;
+
+    java.util.Map<String, ImagePattern> imgFile = new HashMap<>();
 
 
     public boolean isBlockRandom() {
@@ -176,6 +177,7 @@ public class Controller implements Initializable {
                 Point p = newMap.getMatrix()[i][j];
                 //bind rectangle color to value with IntToColor function
                 rec.fillProperty().bind(Bindings.createObjectBinding(() -> IntToColor.getColor(p.valueProperty().get()), p.valueProperty()));
+                p.setRec(rec);
                 GridPane.setConstraints(rec, j, i);
                 GridPane.setMargin(rec, new Insets(pad, pad, pad, pad));
                 mapGrid.getChildren().add(rec);
@@ -195,7 +197,7 @@ public class Controller implements Initializable {
             return;
         }
 
-        final String POINT="Point";
+        final String POINT = "Point";
         final String LOCATION = "location";
         final String INTERESTING = "interesting";
 
@@ -216,47 +218,52 @@ public class Controller implements Initializable {
         }
 
         List<List<Point>> pathToInteres = pathToInsteres(pointList);
+        this.pathToInsteres = pathToInteres;
+        this.agentLoaded = true;
 
-        try {
-            ImagePattern img = Utiles.margeImages(ImageIO.read(new File("images/img.png")),ImageIO.read(new File("images/img.png")));
-            //rec.setFill(img);
-        } catch(Exception e) {
-            System.err.println("Error while loading images files");
+        List<Map> maplist = new LinkedList<>();
+        for (List<Point> list : pathToInteres) {
+            maplist.add(new Map(this.map));
         }
-        System.out.println();
+        this.mapslog = maplist;
 
-        //now I have a list with the path.
-        //for each report that is interest point, build a path
-        for (Report j: pointList) {
-            if(j.getIntersting())
-                System.out.println(j.getLocation());
+        this.blockRandom.set(true);
+        this.blockPointsAdd.set(true);
+        this.mapslog = maplist;
+        if (this.mapslog.size() > 0) { //let user click on play and forward buttons
+            this.blockForward.set(false);
+            this.blockPlay.set(false);
+            this.changeMap(0);
         }
+    }
 
-        /*
-        List<String> records;
-        List<Point> pointList;
+    public void drawPath(int n) {
+        ImagePattern img = null;
 
-        try {
-            records = Utiles.readPointsFromCSV(f);
-            pointList = Utiles.convertStringToPoints(records);
-            Point[][] mat = this.map.getMatrix();
-            cleanMap(); //clean map so only border will left
-            for (Point p : pointList) {
-                mat[p.getX()][p.getY()].setValue(Map.INTERES);
+        for (Point p : this.pathToInsteres.get(n)) {
+            String direction = "n";
+            if (this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill() instanceof ImagePattern) {
+                ImagePattern a = (ImagePattern) this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill();
+                try {
+                    img = Utiles.margeImages(SwingFXUtils.fromFXImage(a.getImage(), null), SwingFXUtils.fromFXImage(this.imgFile.get(direction).getImage(), null));
+                } catch (Exception e) {
+                    System.err.println("Error while loading images files");
+                }
+            } else {
+                img = this.imgFile.get(direction);
             }
-        } catch (Exception e) {
-            AlertBox.display("Point file is incorrect");
-        }
-        */
 
+            this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().fillProperty().unbind();
+            this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().setFill(img);
+        }
     }
 
     //return list that the last point is interest
     public List<List<Point>> pathToInsteres(List<Report> reportList) {
         List<List<Point>> pointsList = new LinkedList<>();
-        for(int i = 0; i < reportList.size(); ++i) {
+        for (int i = 0; i < reportList.size(); ++i) {
             if (reportList.get(i).getIntersting()) {
-                pointsList.add(Utiles.getPointsFromReport(reportList, 0,i));
+                pointsList.add(Utiles.getPointsFromReport(reportList, 0, i));
             }
         }
         return pointsList;
@@ -270,7 +277,6 @@ public class Controller implements Initializable {
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = reader.readLine();
         List<Map> maplist = new LinkedList<>();
-
         while (line != null) {
             List<String> list = new LinkedList<>();
             while ((line = reader.readLine()) != null && !line.equals("")) {
@@ -292,6 +298,7 @@ public class Controller implements Initializable {
     private synchronized void changeMap(int n) {
         if (n >= this.mapslog.size()) return; //check if the n'th map is valid
         this.setMapGrid(createMapGrid(this.mapslog.get(n))); //set the new map
+        if(this.agentLoaded) this.drawPath(n);
         this.currentMap = n;
         //block and dis-block button according to the n'th
         if (this.mapslog.size() - 1 == n) {
@@ -327,6 +334,14 @@ public class Controller implements Initializable {
         this.blockForward.set(true);
         this.blockPlay.set(true);
         this.blockRandom.set(true);
+        this.imgFile.put("n", new ImagePattern(new Image("file:images/n.png"))); // north
+        this.imgFile.put("ne", new ImagePattern(new Image("file:images/ne.png"))); // north-east
+        this.imgFile.put("e", new ImagePattern(new Image("file:images/e.png"))); // east
+        this.imgFile.put("es", new ImagePattern(new Image("file:images/es.png"))); // east-south
+        this.imgFile.put("s", new ImagePattern(new Image("file:images/s.png"))); // south
+        this.imgFile.put("sw", new ImagePattern(new Image("file:images/sw.png"))); // south-west
+        this.imgFile.put("w", new ImagePattern(new Image("file:images/w.png"))); // west
+        this.imgFile.put("wn", new ImagePattern(new Image("file:images/wn.png"))); // west-north
     }
 
     //when user click on the backward button

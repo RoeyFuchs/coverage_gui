@@ -1,16 +1,18 @@
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.shape.Rectangle;
 
 public class Point {
     private int x;
     private int y;
     private IntegerProperty value = new SimpleIntegerProperty(this, "value", -1);
 
+    private Rectangle rec;
+
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
-
 
     public int getX() {
         return x;
@@ -38,6 +40,14 @@ public class Point {
 
     public void setValue(int value) {
         this.value.set(value);
+    }
+
+    public Rectangle getRec() {
+        return rec;
+    }
+
+    public void setRec(Rectangle rec) {
+        this.rec = rec;
     }
 
 

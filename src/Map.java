@@ -22,6 +22,22 @@ public class Map {
         this.matrix = matrix;
     }
 
+    public Map(Map map) {
+        this.matrix = new Point[map.getRowsNumber()][map.getColumnsNumber()];
+        for (int i = 0; i < map.getRowsNumber(); ++i) {
+            for (int j = 0; j < map.getColumnsNumber(); ++j) {
+                if (!Map.isValidNumber(map.getMatrix()[i][j].getValue())) {
+                    System.err.println("Error while create a map");
+                }
+                Point p = new Point(i, j);
+                p.setValue(map.getMatrix()[i][j].getValue()); //set value
+                matrix[i][j] = p; //add to matrix
+            }
+        }
+
+    }
+
+
     public static Map CreateMapFromLog(List<String> list) throws IOException {
         List<List<String>> info = new LinkedList<>();
         for (int i =0; i < list.size(); i++) {
