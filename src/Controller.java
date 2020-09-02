@@ -239,9 +239,9 @@ public class Controller implements Initializable {
 
     public void drawPath(int n) {
         ImagePattern img = null;
-
-        for (Point p : this.pathToInsteres.get(n)) {
-            String direction = "n";
+        for (int i = 0; i < this.pathToInsteres.get(n).size()-1; i++) {
+            Point p = this.pathToInsteres.get(n).get(i);
+            String direction = fromDirection(p, this.pathToInsteres.get(n).get(i+1));
             if (this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill() instanceof ImagePattern) {
                 ImagePattern a = (ImagePattern) this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill();
                 try {
@@ -256,6 +256,26 @@ public class Controller implements Initializable {
             this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().fillProperty().unbind();
             this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().setFill(img);
         }
+    }
+
+    //check the direction from a to b
+    private String fromDirection(Point a, Point b) {
+        if (a.getX() == b.getX()) {
+            if(a.getY() < b.getY()) return "e"; //east
+            if(a.getY() > b.getY()) return "w"; //west
+        }
+        if(a.getX() > b.getX()) {
+            if(a.getY() == b.getY()) return "n"; //north
+            if(a.getY() < b.getY()) return "ne"; //north-east
+            return "wn"; //west-north
+        }
+        if (a.getX() < b.getX()) {
+            if(a.getY() == b.getY()) return "s"; //south
+            if(a.getY() < b.getY()) return "es"; //east-south
+            return "ws"; //south-west
+        }
+        return null;
+
     }
 
     //return list that the last point is interest
