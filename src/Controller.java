@@ -272,7 +272,7 @@ public class Controller implements Initializable {
         if (a.getX() < b.getX()) {
             if(a.getY() == b.getY()) return "s"; //south
             if(a.getY() < b.getY()) return "es"; //east-south
-            return "ws"; //south-west
+            return "sw"; //south-west
         }
         return null;
 
