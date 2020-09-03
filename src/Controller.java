@@ -46,6 +46,8 @@ public class Controller implements Initializable {
     List<List<Point>> pathToInsteres;
 
     java.util.Map<String, ImagePattern> imgFile = new HashMap<>();
+    java.util.Map<String, ImagePattern> imgFileStart = new HashMap<>();
+    java.util.Map<String, ImagePattern> imgFileEnd = new HashMap<>();
 
 
     public boolean getBlockBackward() {
@@ -83,7 +85,6 @@ public class Controller implements Initializable {
     public void setBlockPlay(boolean blockPlay) {
         this.blockPlay.set(blockPlay);
     }
-
 
     public boolean getBlockPointsAdd() {
         return blockPointsAdd.get();
@@ -222,15 +223,24 @@ public class Controller implements Initializable {
 
     public void drawPath(int n) {
         ImagePattern img = null;
+        java.util.Map<String, ImagePattern> arrowImg;
         for (int i = 0; i < this.pathToInsteres.get(n).size() - 1; i++) {
             Point p = this.pathToInsteres.get(n).get(i);
             String direction = fromDirection(p, this.pathToInsteres.get(n).get(i + 1));
+            //find which arrow style to use
+            if (i == 0) {
+                arrowImg = this.imgFileStart;
+            } else if (i == this.pathToInsteres.get(n).size() - 2) {
+                arrowImg = this.imgFileEnd;
+            } else {
+                arrowImg = this.imgFile;
+            }
             try {
                 if (this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill() instanceof ImagePattern) {
                     ImagePattern a = (ImagePattern) this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill();
-                    img = Utiles.margeImages(SwingFXUtils.fromFXImage(a.getImage(), null), SwingFXUtils.fromFXImage(this.imgFile.get(direction).getImage(), null));
+                    img = Utiles.margeImages(SwingFXUtils.fromFXImage(a.getImage(), null), SwingFXUtils.fromFXImage(arrowImg.get(direction).getImage(), null));
                 } else {
-                    img = this.imgFile.get(direction);
+                    img = arrowImg.get(direction);
                 }
                 this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().fillProperty().unbind();
                 this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().setFill(img);
@@ -263,9 +273,9 @@ public class Controller implements Initializable {
     //return list that the last point is interest
     public List<List<Point>> pathToInsteres(List<Report> reportList) {
         List<List<Point>> pointsList = new LinkedList<>();
-        for (int i = 0; i < reportList.size(); ++i) {
+        for (int i = 0; i < reportList.size() - 1; ++i) {
             if (reportList.get(i).getIntersting()) {
-                pointsList.add(Utiles.getPointsFromReport(reportList, 0, i));
+                pointsList.add(Utiles.getPointsFromReport(reportList, 0, i + 1));
             }
         }
         return pointsList;
@@ -334,6 +344,10 @@ public class Controller implements Initializable {
         this.blockBackward.set(true);
         this.blockForward.set(true);
         this.blockPlay.set(true);
+        this.initializeArrowsFiles();
+    }
+
+    private void initializeArrowsFiles() {
         this.imgFile.put("n", new ImagePattern(new Image("file:images/n.png"))); // north
         this.imgFile.put("ne", new ImagePattern(new Image("file:images/ne.png"))); // north-east
         this.imgFile.put("e", new ImagePattern(new Image("file:images/e.png"))); // east
@@ -342,6 +356,24 @@ public class Controller implements Initializable {
         this.imgFile.put("sw", new ImagePattern(new Image("file:images/sw.png"))); // south-west
         this.imgFile.put("w", new ImagePattern(new Image("file:images/w.png"))); // west
         this.imgFile.put("wn", new ImagePattern(new Image("file:images/wn.png"))); // west-north
+
+        this.imgFileStart.put("n", new ImagePattern(new Image("file:images/start/n.png"))); // north
+        this.imgFileStart.put("ne", new ImagePattern(new Image("file:images/start/ne.png"))); // north-east
+        this.imgFileStart.put("e", new ImagePattern(new Image("file:images/start/e.png"))); // east
+        this.imgFileStart.put("es", new ImagePattern(new Image("file:images/start/es.png"))); // east-south
+        this.imgFileStart.put("s", new ImagePattern(new Image("file:images/start/s.png"))); // south
+        this.imgFileStart.put("sw", new ImagePattern(new Image("file:images/start/sw.png"))); // south-west
+        this.imgFileStart.put("w", new ImagePattern(new Image("file:images/start/w.png"))); // west
+        this.imgFileStart.put("wn", new ImagePattern(new Image("file:images/start/wn.png"))); // west-north
+
+        this.imgFileEnd.put("n", new ImagePattern(new Image("file:images/end/n.png"))); // north
+        this.imgFileEnd.put("ne", new ImagePattern(new Image("file:images/end/ne.png"))); // north-east
+        this.imgFileEnd.put("e", new ImagePattern(new Image("file:images/end/e.png"))); // east
+        this.imgFileEnd.put("es", new ImagePattern(new Image("file:images/end/es.png"))); // east-south
+        this.imgFileEnd.put("s", new ImagePattern(new Image("file:images/end/s.png"))); // south
+        this.imgFileEnd.put("sw", new ImagePattern(new Image("file:images/end/sw.png"))); // south-west
+        this.imgFileEnd.put("w", new ImagePattern(new Image("file:images/end/w.png"))); // west
+        this.imgFileEnd.put("wn", new ImagePattern(new Image("file:images/end/wn.png"))); // west-north
     }
 
     //when user click on the backward button
