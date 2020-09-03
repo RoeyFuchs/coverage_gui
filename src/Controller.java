@@ -42,24 +42,10 @@ public class Controller implements Initializable {
     BooleanProperty blockBackward = new SimpleBooleanProperty(); //block backward button
     BooleanProperty blockForward = new SimpleBooleanProperty(); //block forward button
     BooleanProperty blockPlay = new SimpleBooleanProperty(); //block play button
-    BooleanProperty blockRandom = new SimpleBooleanProperty(); //block random points option
     Boolean agentLoaded = false;
     List<List<Point>> pathToInsteres;
 
     java.util.Map<String, ImagePattern> imgFile = new HashMap<>();
-
-
-    public boolean isBlockRandom() {
-        return blockRandom.get();
-    }
-
-    public BooleanProperty blockRandomProperty() {
-        return blockRandom;
-    }
-
-    public void setBlockRandom(boolean blockRandom) {
-        this.blockRandom.set(blockRandom);
-    }
 
 
     public boolean getBlockBackward() {
@@ -129,7 +115,6 @@ public class Controller implements Initializable {
             GridPane newMapGrid = this.createMapGrid(this.map); //create map grid
             setMapGrid(newMapGrid); //show the map on screen
             this.blockPointsAdd.set(false); //now the user can add points file
-            this.blockRandom.set(false); //now user can create random points
         } catch (Exception e) {
             AlertBox.display("can't open map file");
         }
@@ -227,7 +212,6 @@ public class Controller implements Initializable {
         }
         this.mapslog = maplist;
 
-        this.blockRandom.set(true);
         this.mapslog = maplist;
         if (this.mapslog.size() > 0) { //let user click on play and forward buttons
             this.blockForward.set(false);
@@ -302,7 +286,6 @@ public class Controller implements Initializable {
             }
             maplist.add(Map.CreateMapFromLog(list)); //adding maps
         }
-        this.blockRandom.set(true);
         this.blockPointsAdd.set(true);
         this.mapslog = maplist;
         if (this.mapslog.size() > 0) { //let user click on play and forward buttons
@@ -351,7 +334,6 @@ public class Controller implements Initializable {
         this.blockBackward.set(true);
         this.blockForward.set(true);
         this.blockPlay.set(true);
-        this.blockRandom.set(true);
         this.imgFile.put("n", new ImagePattern(new Image("file:images/n.png"))); // north
         this.imgFile.put("ne", new ImagePattern(new Image("file:images/ne.png"))); // north-east
         this.imgFile.put("e", new ImagePattern(new Image("file:images/e.png"))); // east
@@ -390,22 +372,6 @@ public class Controller implements Initializable {
             t.start();
         } else { //stop the map change
             this.mapChangingThread.interrupt();
-        }
-    }
-
-    //when user click on random points option
-    public void random(ActionEvent actionEvent) {
-        final float pr = 0.20F; //probability to choose a points as interesting point
-        for (int i = 0; i < this.map.getRowsNumber(); i++) {
-            for (int j = 0; j < this.map.getColumnsNumber(); j++) {
-                if (this.map.getMatrix()[i][j].getValue() == Map.BORDER)
-                    continue; //don't let border to be interesting point
-                if (Math.random() <= pr) {
-                    this.map.getMatrix()[i][j].setValue(Map.INTERES);
-                } else {
-                    this.map.getMatrix()[i][j].setValue(Map.REGULAR);
-                }
-            }
         }
     }
 
