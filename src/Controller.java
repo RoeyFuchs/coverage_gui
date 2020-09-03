@@ -228,7 +228,6 @@ public class Controller implements Initializable {
         this.mapslog = maplist;
 
         this.blockRandom.set(true);
-        this.blockPointsAdd.set(true);
         this.mapslog = maplist;
         if (this.mapslog.size() > 0) { //let user click on play and forward buttons
             this.blockForward.set(false);
@@ -239,39 +238,38 @@ public class Controller implements Initializable {
 
     public void drawPath(int n) {
         ImagePattern img = null;
-        for (int i = 0; i < this.pathToInsteres.get(n).size()-1; i++) {
+        for (int i = 0; i < this.pathToInsteres.get(n).size() - 1; i++) {
             Point p = this.pathToInsteres.get(n).get(i);
-            String direction = fromDirection(p, this.pathToInsteres.get(n).get(i+1));
-            if (this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill() instanceof ImagePattern) {
-                ImagePattern a = (ImagePattern) this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill();
-                try {
+            String direction = fromDirection(p, this.pathToInsteres.get(n).get(i + 1));
+            try {
+                if (this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill() instanceof ImagePattern) {
+                    ImagePattern a = (ImagePattern) this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().getFill();
                     img = Utiles.margeImages(SwingFXUtils.fromFXImage(a.getImage(), null), SwingFXUtils.fromFXImage(this.imgFile.get(direction).getImage(), null));
-                } catch (Exception e) {
-                    System.err.println("Error while loading images files");
+                } else {
+                    img = this.imgFile.get(direction);
                 }
-            } else {
-                img = this.imgFile.get(direction);
+                this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().fillProperty().unbind();
+                this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().setFill(img);
+            } catch (Exception e) {
+                AlertBox.display("Error while draw a path");
             }
-
-            this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().fillProperty().unbind();
-            this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec().setFill(img);
         }
     }
 
     //check the direction from a to b
     private String fromDirection(Point a, Point b) {
         if (a.getX() == b.getX()) {
-            if(a.getY() < b.getY()) return "e"; //east
-            if(a.getY() > b.getY()) return "w"; //west
+            if (a.getY() < b.getY()) return "e"; //east
+            if (a.getY() > b.getY()) return "w"; //west
         }
-        if(a.getX() > b.getX()) {
-            if(a.getY() == b.getY()) return "n"; //north
-            if(a.getY() < b.getY()) return "ne"; //north-east
+        if (a.getX() > b.getX()) {
+            if (a.getY() == b.getY()) return "n"; //north
+            if (a.getY() < b.getY()) return "ne"; //north-east
             return "wn"; //west-north
         }
         if (a.getX() < b.getX()) {
-            if(a.getY() == b.getY()) return "s"; //south
-            if(a.getY() < b.getY()) return "es"; //east-south
+            if (a.getY() == b.getY()) return "s"; //south
+            if (a.getY() < b.getY()) return "es"; //east-south
             return "sw"; //south-west
         }
         return null;
@@ -318,7 +316,7 @@ public class Controller implements Initializable {
     private synchronized void changeMap(int n) {
         if (n >= this.mapslog.size()) return; //check if the n'th map is valid
         this.setMapGrid(createMapGrid(this.mapslog.get(n))); //set the new map
-        if(this.agentLoaded) this.drawPath(n);
+        if (this.agentLoaded) this.drawPath(n);
         this.currentMap = n;
         //block and dis-block button according to the n'th
         if (this.mapslog.size() - 1 == n) {
