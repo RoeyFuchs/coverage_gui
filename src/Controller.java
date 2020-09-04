@@ -1,8 +1,6 @@
-import com.sun.webkit.network.Util;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -22,26 +20,26 @@ import org.w3c.dom.NodeList;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.beans.XMLDecoder;
 import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.System.exit;
-import static java.lang.System.setOut;
 
 public class Controller implements Initializable {
     public GridPane mainGrid;
     GridPane mapGrid;
     Map map;
     List<Map> mapslog;
+
     int currentMap = -1;
     Thread mapChangingThread;
     BooleanProperty blockPointsAdd = new SimpleBooleanProperty(); //block adding points option
     BooleanProperty blockBackward = new SimpleBooleanProperty(); //block backward button
     BooleanProperty blockForward = new SimpleBooleanProperty(); //block forward button
     BooleanProperty blockPlay = new SimpleBooleanProperty(); //block play button
+
     Boolean agentLoaded = false;
     List<List<Point>> pathToInsteres;
 
@@ -298,6 +296,7 @@ public class Controller implements Initializable {
         }
         this.blockPointsAdd.set(true);
         this.mapslog = maplist;
+        this.agentLoaded = false;
         if (this.mapslog.size() > 0) { //let user click on play and forward buttons
             this.blockForward.set(false);
             this.blockPlay.set(false);
@@ -419,4 +418,5 @@ public class Controller implements Initializable {
             System.err.println("Error while saving screen shot");
         }
     }
+
 }
