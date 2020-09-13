@@ -48,8 +48,8 @@ public class Controller implements Initializable {
     java.util.Map<String, ImagePattern> imgFileStart = new HashMap<>();
     java.util.Map<String, ImagePattern> imgFileEnd = new HashMap<>();
 
-    final int stepsAfterInteres = 5; // how many steps after interes point will show, including the interes point
-    final int stepsBeforeInteres = 3; // how many steps before interes
+    final int stepsAfterInteres = 3; // how many steps after interes point will show,
+    final int stepsBeforeInteres = 2; // how many steps before interes
 
 
 
@@ -230,7 +230,7 @@ public class Controller implements Initializable {
         for (int i = 0; i < this.pathToInsteres.get(n).size() - 1; i++) {
             Point p = this.pathToInsteres.get(n).get(i);
             String direction = fromDirection(p, this.pathToInsteres.get(n).get(i + 1));
-            if (i < this.pathToInsteres.get(n).size() - this.stepsAfterInteres - this.stepsBeforeInteres - 1) { // don't show unless is steps_before
+            if (i < this.pathToInsteres.get(n).size() - this.stepsAfterInteres - this.stepsBeforeInteres - 2) { // don't show unless is steps_before
                 Point mapP = this.mapslog.get(n).getMatrix()[p.getX()][p.getY()];
                 Rectangle rec = this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec();
                 mapP.setValue(Map.BEEN_HERE);
@@ -238,9 +238,9 @@ public class Controller implements Initializable {
                 continue;
             }
             //find which arrow style to use
-            if (i == this.pathToInsteres.get(n).size() - this.stepsAfterInteres - this.stepsBeforeInteres - 1) { // starting point
+            if (i == this.pathToInsteres.get(n).size() - this.stepsAfterInteres - this.stepsBeforeInteres - 2) { // starting point
                 arrowImg = this.imgFileStart;
-            } else if (i == this.pathToInsteres.get(n).size() - 1 - this.stepsAfterInteres) { // the instersting point
+            } else if (i == this.pathToInsteres.get(n).size() - 2 - this.stepsAfterInteres) { // the instersting point
                 arrowImg = this.imgFileEnd;
             } else {
                 arrowImg = this.imgFile;
