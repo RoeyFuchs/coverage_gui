@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
@@ -46,6 +47,10 @@ public class Controller implements Initializable {
     java.util.Map<String, ImagePattern> imgFile = new HashMap<>();
     java.util.Map<String, ImagePattern> imgFileStart = new HashMap<>();
     java.util.Map<String, ImagePattern> imgFileEnd = new HashMap<>();
+
+    final int stepsAfterInteres = 5; // how many steps after interes point will show, including the interes point
+    final int stepsBeforeInteres = 3; // how many steps before interes
+
 
 
     public boolean getBlockBackward() {
@@ -225,10 +230,17 @@ public class Controller implements Initializable {
         for (int i = 0; i < this.pathToInsteres.get(n).size() - 1; i++) {
             Point p = this.pathToInsteres.get(n).get(i);
             String direction = fromDirection(p, this.pathToInsteres.get(n).get(i + 1));
+            if (i < this.pathToInsteres.get(n).size() - this.stepsAfterInteres - this.stepsBeforeInteres - 1) { // don't show unless is steps_before
+                Point mapP = this.mapslog.get(n).getMatrix()[p.getX()][p.getY()];
+                Rectangle rec = this.mapslog.get(n).getMatrix()[p.getX()][p.getY()].getRec();
+                mapP.setValue(Map.BEEN_HERE);
+                rec.fillProperty().bind(Bindings.createObjectBinding(() -> IntToColor.getColor(mapP.valueProperty().get()), mapP.valueProperty()));
+                continue;
+            }
             //find which arrow style to use
-            if (i == 0) {
+            if (i == this.pathToInsteres.get(n).size() - this.stepsAfterInteres - this.stepsBeforeInteres - 1) { // starting point
                 arrowImg = this.imgFileStart;
-            } else if (i == this.pathToInsteres.get(n).size() - 2) {
+            } else if (i == this.pathToInsteres.get(n).size() - 1 - this.stepsAfterInteres) { // the instersting point
                 arrowImg = this.imgFileEnd;
             } else {
                 arrowImg = this.imgFile;
@@ -271,9 +283,9 @@ public class Controller implements Initializable {
     //return list that the last point is interest
     public List<List<Point>> pathToInsteres(List<Report> reportList) {
         List<List<Point>> pointsList = new LinkedList<>();
-        for (int i = 0; i < reportList.size() - 1; ++i) {
-            if (reportList.get(i).getIntersting()) {
-                pointsList.add(Utiles.getPointsFromReport(reportList, 0, i + 1));
+        for (int i = this.stepsBeforeInteres; i < reportList.size() - 1 - this.stepsAfterInteres; ++i) {
+            if (reportList.get(i).getIntersting()) { //if this point is intersting
+                pointsList.add(Utiles.getPointsFromReport(reportList, 0, i + this.stepsAfterInteres + 1));
             }
         }
         return pointsList;
