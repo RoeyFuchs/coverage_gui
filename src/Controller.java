@@ -48,8 +48,8 @@ public class Controller implements Initializable {
     java.util.Map<String, ImagePattern> imgFileStart = new HashMap<>();
     java.util.Map<String, ImagePattern> imgFileEnd = new HashMap<>();
 
-    final int stepsAfterInteres = 3; // how many steps after interes point will show,
-    final int stepsBeforeInteres = 2; // how many steps before interes
+    final int stepsAfterInteres = 2; // how many steps after interes point will show,
+    final int stepsBeforeInteres = 4; // how many steps before interes
 
 
 
@@ -112,6 +112,10 @@ public class Controller implements Initializable {
     //when use choose to load map file
     public void loadMapFile(ActionEvent actionEvent) {
         File f = this.getFile("Open Map file");
+        this.loadMap(f);
+    }
+
+    public void loadMap(File f) {
         if (f == null) return; //if user didn't choose file
         this.clearThread();
         try {
@@ -176,20 +180,23 @@ public class Controller implements Initializable {
         return mapGrid;
     }
 
+
+
     //when user click on adding interes points
     public void loadInteresPoints(ActionEvent actionEvent) {
         File f = getFile("Open Points file");
-        if (f == null) return; //if user didn't choose file
+        this.loadInteresPoints(f);
 
+    }
+    public void loadInteresPoints(File f) {
+        if (f == null) return; //if user didn't choose file
         if (this.map == null) {
             AlertBox.display("Please load map file first.");
             return;
         }
-
         final String POINT = "Point";
         final String LOCATION = "location";
         final String INTERESTING = "interesting";
-
         List<Report> pointList = new LinkedList<>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -316,6 +323,10 @@ public class Controller implements Initializable {
         }
     }
 
+    public int getNumbersOfMaps() {
+        return this.mapslog.size();
+    }
+
     //change the map that use see
     private synchronized void changeMap(int n) {
         if (n >= this.mapslog.size()) return; //check if the n'th map is valid
@@ -422,8 +433,12 @@ public class Controller implements Initializable {
     public void screenshot(ActionEvent actionEvent) {
         if (this.mapGrid == null) return;
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS").format(new Date()); //file name format - time stamp
+        this.takeSS(timeStamp);
+
+    }
+    public void takeSS(String path) {
         WritableImage snapshot = this.mapGrid.snapshot(null, null);
-        File file = new File(timeStamp + ".png");
+        File file = new File(path + ".png");
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
         } catch (IOException e) {
