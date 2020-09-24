@@ -29,10 +29,15 @@ public class Main extends Application {
         if (parametres.size() > 0) {
             controller.loadMap(new File(parametres.get(0)));
             controller.loadInteresPoints(new File(parametres.get(1)));
-            for (Integer i = 0; i <= controller.getNumbersOfMaps(); ++i) {
-                controller.takeSS(parametres.get(2)+"/"+i.toString());
+            Integer i = 0;
+            while (!controller.getBlockForward()) {
+                controller.takeSS(parametres.get(2)+"\\"+i.toString());
                 controller.mapForward(null);
+                i++;
             }
+            //the last one is aleardy blocked
+            controller.takeSS(parametres.get(2)+"\\"+i.toString());
+            controller.exitFunc();
         }
 
 
