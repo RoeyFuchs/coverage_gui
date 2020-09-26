@@ -70,6 +70,7 @@ public class Utiles {
     public static List<Point> getPointsFromReport(List<Report> list, int start, int end) {
         List<Point> pointList = new LinkedList<>();
         for (int i = start; i <= end; i++) {
+            if(i == list.size()) break;
             pointList.add(list.get(i).getLocation());
         }
         return pointList;

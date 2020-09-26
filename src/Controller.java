@@ -290,7 +290,7 @@ public class Controller implements Initializable {
     //return list that the last point is interest
     public List<List<Point>> pathToInsteres(List<Report> reportList) {
         List<List<Point>> pointsList = new LinkedList<>();
-        for (int i = this.stepsBeforeInteres; i < reportList.size() - 1 - this.stepsAfterInteres; ++i) {
+        for (int i = this.stepsBeforeInteres; i < reportList.size() ; ++i) {
             if (reportList.get(i).getIntersting()) { //if this point is intersting
                 pointsList.add(Utiles.getPointsFromReport(reportList, 0, i + this.stepsAfterInteres + 1));
             }
