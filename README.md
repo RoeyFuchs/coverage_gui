@@ -9,5 +9,5 @@ java --module-path path/to/javafx-sdk-14.0.1/lib/ --add-modules javafx.fxml,java
 ### Take automaticly screenshots of critical points
 Use program arguments: 
 1. Path to map.
-2. Path to critail points file.
+2. Path to critical points file.
 3. Path to dirctory for saving screenshots.
